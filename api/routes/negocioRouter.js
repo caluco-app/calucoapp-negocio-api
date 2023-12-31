@@ -18,5 +18,15 @@ router.post('/stocksPorNegocio', productosController.stockMtto);
 router.get('/stockPorInventario/:idNegocio/:idInventario', productosController.stockPorInventario);
 router.get('/stockPorIdInventario/:idInventario', productosController.stockPorIdInventario);
 
+// Ruta de mantenimiento de productos
+router.get('/productosPorNegocio/:idNegocio', productosController.productosPorNegocios);
+router.post('/productosPorNegocio', productosController.productoMtto);
+router.delete('/productos/:id', productosController.eliminarProducto);
+
+// Ruta de mantenimiento de ofertas
+router.get('/ofertasPorProductos/:idProducto', productosController.ofertasPorProductos);
+router.post('/ofertasPorProductos', productosController.ofertaMtto);
+router.delete('/ofertasPorProductos/:id', productosController.eliminarProducto);
+
 
 module.exports = router;
