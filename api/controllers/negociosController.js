@@ -45,6 +45,27 @@ exports.ofertasPorProductos = (req, res) => {
     });
 };
 
+exports.inventarioPorProductos = (req, res) => {
+    const idProducto = req.params.idProducto; 
+
+    // Consulta para obtener productos por negocio
+    const query = 'SELECT * FROM inventarioporproducto WHERE idproducto = ?';
+
+    db.query(query, [idProducto], (err, resultados) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+        }
+
+        // Verificar si se encontraron productos
+        if (resultados.length > 0) {
+            return res.json({ state: 'success', data: resultados, message: 'Registros obtenidos correctamente' });
+        } else {
+            return res.status(200).json({ state: 'fail', data: [], message: 'No se encontraron Registros' });
+        }
+    });
+};
+
 exports.stockPorInventario = (req, res) => {
     const idNegocio = req.params.idNegocio; 
     const idInventario = req.params.idInventario;
@@ -133,10 +154,10 @@ exports.inventarioPorNegocios = (req, res) => {
     COALESCE(SUM(s.entrada - s.salida), 0) AS existencias,
     CASE
         WHEN SUM(s.entrada - s.salida) > 0
-            THEN ROUND(SUM(s.costo * s.entrada) / SUM(s.entrada ), 2)
+            THEN ROUND(SUM(s.costo * s.entrada) / SUM(s.entrada ), 3)
         ELSE 0.00
     END AS costo,
-    COALESCE(SUM(s.entrada - s.salida) * COALESCE(ROUND(SUM(s.costo * s.entrada) / SUM(s.entrada), 2), 0), 0) AS total
+    COALESCE(SUM(s.entrada - s.salida) * COALESCE(ROUND(SUM(s.costo * s.entrada) / SUM(s.entrada), 3), 0), 0) AS total
     FROM
         inventarios i
     LEFT JOIN
@@ -289,6 +310,38 @@ exports.ofertaMtto = (req, res) => {
 };
 
 
+exports.inventarioPorProductoMtto = (req, res) => {
+    const id = req.body.id;
+    const { cantidad, idinventario, idproducto } = req.body;
+
+    if (id==0) {
+
+        const query = 'INSERT INTO inventarioporproducto (cantidad, idinventario, idproducto) VALUES (?,?, ?)';
+
+        db.query(query, [ cantidad, idinventario, idproducto], (err, resultado) => {
+            if (err) {
+                console.error('Error en la consulta:', err);
+                return res.status(200).json({ state: 'fail', data: null, message: 'Error al crear el Registro' });
+            }
+
+            return res.json({ state: 'success', data: { id: resultado.insertId }, message: 'Registro creado correctamente' });
+        });
+    }
+    else {
+        const query = 'UPDATE inventarioporproducto SET cantidad = ?, idinventario = ?, idproducto = ? WHERE id = ?';
+
+        db.query(query, [cantidad, idinventario, idproducto, id], (err) => {
+            if (err) {
+                console.error('Error en la consulta:', err);
+                return res.status(200).json({ state: 'fail', data: null, message: 'Error al actualizar el registro' });
+            }
+
+            return res.json({ state: 'success', data: null, message: 'Registro actualizado correctamente' });
+        });
+    }
+
+};
+
 // Mantenimiento de stock
 exports.stockMtto = (req, res) => {
     const id = req.body.id;
@@ -349,6 +402,36 @@ exports.eliminarProducto = (req, res) => {
     const idInventario = req.params.id;
 
     const query = 'DELETE FROM productos WHERE id = ?';
+
+    db.query(query, [idInventario], (err) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(200).json({ state: 'fail', data: null, message: 'Error al eliminar el registro' });
+        }
+
+        return res.json({ state: 'success', data: null, message: 'Registro eliminado correctamente' });
+    });
+};
+
+exports.eliminarOfertaPorProducto = (req, res) => {
+    const idInventario = req.params.id;
+
+    const query = 'DELETE FROM ofertasporproducto WHERE id = ?';
+
+    db.query(query, [idInventario], (err) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(200).json({ state: 'fail', data: null, message: 'Error al eliminar el registro' });
+        }
+
+        return res.json({ state: 'success', data: null, message: 'Registro eliminado correctamente' });
+    });
+};
+
+exports.eliminarInventarioPorProducto = (req, res) => {
+    const idInventario = req.params.id;
+
+    const query = 'DELETE FROM inventarioporproducto WHERE id = ?';
 
     db.query(query, [idInventario], (err) => {
         if (err) {

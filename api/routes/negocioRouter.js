@@ -26,7 +26,12 @@ router.delete('/productos/:id', productosController.eliminarProducto);
 // Ruta de mantenimiento de ofertas
 router.get('/ofertasPorProductos/:idProducto', productosController.ofertasPorProductos);
 router.post('/ofertasPorProductos', productosController.ofertaMtto);
-router.delete('/ofertasPorProductos/:id', productosController.eliminarProducto);
+router.delete('/ofertasPorProductos/:id', productosController.eliminarOfertaPorProducto);
+
+// Ruta de mantenimiento de inventarios
+router.get('/inventarioPorProductos/:idProducto', productosController.inventarioPorProductos);
+router.post('/inventarioPorProductos', productosController.inventarioPorProductoMtto);
+router.delete('/inventarioPorProductos/:id', productosController.eliminarInventarioPorProducto);
 
 
 module.exports = router;
