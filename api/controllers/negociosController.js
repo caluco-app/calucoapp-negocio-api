@@ -66,6 +66,27 @@ exports.inventarioPorProductos = (req, res) => {
     });
 };
 
+exports.obtenerClientes = (req, res) => {
+    
+
+    // Consulta para obtener productos por negocio
+    const query = 'SELECT * FROM negocios';
+
+    db.query(query, [], (err, resultados) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+        }
+
+        // Verificar si se encontraron productos
+        if (resultados.length > 0) {
+            return res.json({ state: 'success', data: resultados, message: 'Registros obtenidos correctamente' });
+        } else {
+            return res.status(200).json({ state: 'fail', data: [], message: 'No se encontraron Registros' });
+        }
+    });
+};
+
 exports.stockPorInventario = (req, res) => {
     const idNegocio = req.params.idNegocio; 
     const idInventario = req.params.idInventario;
@@ -342,6 +363,45 @@ exports.inventarioPorProductoMtto = (req, res) => {
 
 };
 
+
+exports.clientesMtto = (req, res) => {
+    const id = req.body.id;
+    const { nombre, giro, cliente, direccion, municipio, departamento, nit, registro, telefono, whatsapp } = req.body;
+
+    if (id == 0) {
+        const query = `
+            INSERT INTO negocios 
+                (nombre, giro, cliente, direccion, municipio, departamento, nit, registro, telefono, whatsapp) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        db.query(query, [nombre, giro, cliente, direccion, municipio, departamento, nit, registro, telefono, whatsapp], (err, resultado) => {
+            if (err) {
+                console.error('Error en la consulta:', err);
+                return res.status(200).json({ state: 'fail', data: null, message: 'Error al crear el Registro' });
+            }
+
+            return res.json({ state: 'success', data: { id: resultado.insertId }, message: 'Registro creado correctamente' });
+        });
+    } else {
+        const query = `
+            UPDATE negocios 
+            SET nombre = ?, giro = ?, cliente = ?, direccion = ?, municipio = ?, 
+                departamento = ?, nit = ?, registro = ?, telefono = ?, whatsapp = ? 
+            WHERE id = ?`;
+
+        db.query(query, [nombre, giro, cliente, direccion, municipio, departamento, nit, registro, telefono, whatsapp, id], (err) => {
+            if (err) {
+                console.error('Error en la consulta:', err);
+                return res.status(200).json({ state: 'fail', data: null, message: 'Error al actualizar el registro' });
+            }
+
+            return res.json({ state: 'success', data: null, message: 'Registro actualizado correctamente' });
+        });
+    }
+};
+
+
+
 // Mantenimiento de stock
 exports.stockMtto = (req, res) => {
     const id = req.body.id;
@@ -432,6 +492,21 @@ exports.eliminarInventarioPorProducto = (req, res) => {
     const idInventario = req.params.id;
 
     const query = 'DELETE FROM inventarioporproducto WHERE id = ?';
+
+    db.query(query, [idInventario], (err) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(200).json({ state: 'fail', data: null, message: 'Error al eliminar el registro' });
+        }
+
+        return res.json({ state: 'success', data: null, message: 'Registro eliminado correctamente' });
+    });
+};
+
+exports.eliminarCliente = (req, res) => {
+    const idInventario = req.params.id;
+
+    const query = 'DELETE FROM negocios WHERE id = ?';
 
     db.query(query, [idInventario], (err) => {
         if (err) {

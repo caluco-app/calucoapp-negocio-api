@@ -34,4 +34,9 @@ router.post('/inventarioPorProductos', productosController.inventarioPorProducto
 router.delete('/inventarioPorProductos/:id', productosController.eliminarInventarioPorProducto);
 
 
+// Ruta de mantenimiento de clientes
+router.get('/clientes/', productosController.obtenerClientes);
+router.post('/clientes', productosController.clientesMtto);
+router.delete('/clientes/:id', productosController.eliminarCliente);
+
 module.exports = router;

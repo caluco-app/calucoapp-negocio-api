@@ -6,6 +6,17 @@ create table negocios(
 	nombre varchar(250) not null
 );
 
+ALTER TABLE negocios
+ADD COLUMN giro VARCHAR(255) AFTER nombre,
+ADD COLUMN cliente VARCHAR(255) AFTER giro,
+ADD COLUMN direccion VARCHAR(255) AFTER cliente,
+ADD COLUMN municipio VARCHAR(255) AFTER direccion,
+ADD COLUMN departamento VARCHAR(255) AFTER municipio,
+ADD COLUMN nit VARCHAR(255) AFTER departamento,
+ADD COLUMN registro VARCHAR(255) AFTER nit,
+ADD COLUMN telefono VARCHAR(20) AFTER registro,
+ADD COLUMN whatsapp VARCHAR(20) AFTER telefono;
+
 create table negociosusuarios(
 	id int not null primary key auto_increment,
 	usuario varchar(250) not null,
