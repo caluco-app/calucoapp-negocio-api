@@ -25,6 +25,7 @@ router.delete('/productos/:id', productosController.eliminarProducto);
 
 // Ruta de mantenimiento de ofertas
 router.get('/ofertasPorProductos/:idProducto', productosController.ofertasPorProductos);
+router.post('/ofertasPorProductosFiltroVenta', productosController.obtenerOfertasPorFiltro);
 router.post('/ofertasPorProductos', productosController.ofertaMtto);
 router.delete('/ofertasPorProductos/:id', productosController.eliminarOfertaPorProducto);
 
@@ -36,7 +37,19 @@ router.delete('/inventarioPorProductos/:id', productosController.eliminarInventa
 
 // Ruta de mantenimiento de clientes
 router.get('/clientes/', productosController.obtenerClientes);
+router.get('/clientes/:filtro', productosController.obtenerClientesPorFiltro);
 router.post('/clientes', productosController.clientesMtto);
 router.delete('/clientes/:id', productosController.eliminarCliente);
+
+// Ruta de mantenimiento de facturas
+router.get('/tiposfactura/', productosController.obtenerTiposDeFactura);
+
+
+// Ruta de mantenimiento de perido fiscal
+router.get('/peridotributarios/', productosController.obtenerPeriodoTributarios);
+
+// Ruta de mantenimiento de facturas
+router.post('/facturacion', productosController.facturasMtto);
+
 
 module.exports = router;

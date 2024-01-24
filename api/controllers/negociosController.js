@@ -25,7 +25,7 @@ exports.productosPorNegocios = (req, res) => {
 
 
 exports.ofertasPorProductos = (req, res) => {
-    const idProducto = req.params.idProducto; 
+    const idProducto = req.params.idProducto;
 
     // Consulta para obtener productos por negocio
     const query = 'SELECT * FROM ofertasporproducto WHERE idproducto = ?';
@@ -45,8 +45,41 @@ exports.ofertasPorProductos = (req, res) => {
     });
 };
 
+exports.obtenerOfertasPorFiltro = (req, res) => {
+
+
+    const { idnegocio, filtro} = req.body;
+
+    // Consulta para obtener ofertas por producto
+    const query = `
+        SELECT o.id, p.codigo, p.nombre, o.cantidad, o.precio, o.descripcion
+        FROM ofertasporproducto o
+        JOIN productos p ON o.idproducto = p.id AND p.idnegocio = ?
+        WHERE 
+            p.codigo LIKE ? OR 
+            p.nombre LIKE ? OR 
+            o.precio LIKE ? OR 
+            o.descripcion LIKE ? OR
+            p.descripcion LIKE ?
+        ORDER BY o.precio DESC`;
+
+    db.query(query, [idnegocio,`%${filtro}%`, `%${filtro}%`, `%${filtro}%`, `%${filtro}%`, `%${filtro}%`], (err, resultados) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+        }
+
+        // Verificar si se encontraron ofertas
+        if (resultados.length > 0) {
+            return res.json({ state: 'success', data: resultados, message: 'Registros obtenidos correctamente' });
+        } else {
+            return res.status(200).json({ state: 'fail', data: [], message: 'No se encontraron Registros' });
+        }
+    });
+};
+
 exports.inventarioPorProductos = (req, res) => {
-    const idProducto = req.params.idProducto; 
+    const idProducto = req.params.idProducto;
 
     // Consulta para obtener productos por negocio
     const query = 'SELECT * FROM inventarioporproducto WHERE idproducto = ?';
@@ -67,7 +100,7 @@ exports.inventarioPorProductos = (req, res) => {
 };
 
 exports.obtenerClientes = (req, res) => {
-    
+
 
     // Consulta para obtener productos por negocio
     const query = 'SELECT * FROM negocios';
@@ -87,8 +120,71 @@ exports.obtenerClientes = (req, res) => {
     });
 };
 
+exports.obtenerClientesPorFiltro = (req, res) => {
+    const filtro = req.params.filtro;
+
+    // Consulta para obtener productos por negocio
+    const query = 'SELECT * FROM negocios WHERE nombre LIKE ? OR cliente LIKE ? OR nit LIKE ? OR registro LIKE ?';
+
+    db.query(query, [`%${filtro}%`, `%${filtro}%`, `%${filtro}%`, `%${filtro}%`], (err, resultados) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+        }
+
+        // Verificar si se encontraron productos
+        if (resultados.length > 0) {
+            return res.json({ state: 'success', data: resultados, message: 'Registros obtenidos correctamente' });
+        } else {
+            return res.status(200).json({ state: 'fail', data: [], message: 'No se encontraron Registros' });
+        }
+    });
+};
+
+exports.obtenerTiposDeFactura = (req, res) => {
+
+
+    // Consulta para obtener productos por negocio
+    const query = 'SELECT * FROM tiposfactura';
+
+    db.query(query, [], (err, resultados) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+        }
+
+        // Verificar si se encontraron productos
+        if (resultados.length > 0) {
+            return res.json({ state: 'success', data: resultados, message: 'Registros obtenidos correctamente' });
+        } else {
+            return res.status(200).json({ state: 'fail', data: [], message: 'No se encontraron Registros' });
+        }
+    });
+};
+
+exports.obtenerPeriodoTributarios = (req, res) => {
+
+
+    // Consulta para obtener productos por negocio
+    const query = `SELECT * FROM peridostributarios where estado in ('A', 'D') order by estado asc `;
+
+    db.query(query, [], (err, resultados) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+        }
+
+        // Verificar si se encontraron productos
+        if (resultados.length > 0) {
+            return res.json({ state: 'success', data: resultados, message: 'Registros obtenidos correctamente' });
+        } else {
+            return res.status(200).json({ state: 'fail', data: [], message: 'No se encontraron Registros' });
+        }
+    });
+};
+
 exports.stockPorInventario = (req, res) => {
-    const idNegocio = req.params.idNegocio; 
+    const idNegocio = req.params.idNegocio;
     const idInventario = req.params.idInventario;
 
     // Consulta para obtener productos por negocio
@@ -302,11 +398,11 @@ exports.ofertaMtto = (req, res) => {
     const id = req.body.id;
     const { cantidad, precio, descripcion, idproducto } = req.body;
 
-    if (id==0) {
+    if (id == 0) {
 
         const query = 'INSERT INTO ofertasporproducto (cantidad, precio, descripcion, idproducto) VALUES (?,?, ?, ?)';
 
-        db.query(query, [ cantidad, precio, descripcion, idproducto], (err, resultado) => {
+        db.query(query, [cantidad, precio, descripcion, idproducto], (err, resultado) => {
             if (err) {
                 console.error('Error en la consulta:', err);
                 return res.status(200).json({ state: 'fail', data: null, message: 'Error al crear el Registro' });
@@ -335,11 +431,11 @@ exports.inventarioPorProductoMtto = (req, res) => {
     const id = req.body.id;
     const { cantidad, idinventario, idproducto } = req.body;
 
-    if (id==0) {
+    if (id == 0) {
 
         const query = 'INSERT INTO inventarioporproducto (cantidad, idinventario, idproducto) VALUES (?,?, ?)';
 
-        db.query(query, [ cantidad, idinventario, idproducto], (err, resultado) => {
+        db.query(query, [cantidad, idinventario, idproducto], (err, resultado) => {
             if (err) {
                 console.error('Error en la consulta:', err);
                 return res.status(200).json({ state: 'fail', data: null, message: 'Error al crear el Registro' });
@@ -399,6 +495,43 @@ exports.clientesMtto = (req, res) => {
         });
     }
 };
+
+exports.facturasMtto = (req, res) => {
+    const id = req.body.id;
+    const { idnegocio, fecha, codigofactura, idtipofactura, idcliente, idusuario, idperiodotributario, estadotributario } = req.body;
+
+    if (id == 0) {
+        const query = `
+            INSERT INTO facturas 
+                (idnegocio, fecha, codigofactura, idtipofactura, idcliente, idusuario, idperiodotributario, estadotributario) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        db.query(query, [idnegocio, fecha, codigofactura, idtipofactura, idcliente, idusuario, idperiodotributario, estadotributario], (err, resultado) => {
+            if (err) {
+                console.error('Error en la consulta:', err);
+                return res.status(200).json({ state: 'fail', data: null, message: 'Error al crear la factura' });
+            }
+
+            return res.json({ state: 'success', data: { id: resultado.insertId }, message: 'Factura creada correctamente' });
+        });
+    } else {
+        const query = `
+            UPDATE facturas 
+            SET idnegocio = ?, fecha = ?, codigofactura = ?, idtipofactura = ?, idcliente = ?, idusuario = ?, 
+                idperiodotributario = ?, estadotributario = ? 
+            WHERE id = ?`;
+
+        db.query(query, [idnegocio, fecha, codigofactura, idtipofactura, idcliente, idusuario, idperiodotributario, estadotributario, id], (err) => {
+            if (err) {
+                console.error('Error en la consulta:', err);
+                return res.status(200).json({ state: 'fail', data: null, message: 'Error al actualizar la factura' });
+            }
+
+            return res.json({ state: 'success', data: null, message: 'Factura actualizada correctamente' });
+        });
+    }
+};
+
 
 
 
