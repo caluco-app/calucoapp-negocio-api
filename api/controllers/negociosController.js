@@ -48,7 +48,7 @@ exports.ofertasPorProductos = (req, res) => {
 exports.obtenerOfertasPorFiltro = (req, res) => {
 
 
-    const { idnegocio, filtro} = req.body;
+    const { idnegocio, filtro } = req.body;
 
     // Consulta para obtener ofertas por producto
     const query = `
@@ -63,7 +63,7 @@ exports.obtenerOfertasPorFiltro = (req, res) => {
             p.descripcion LIKE ?
         ORDER BY o.precio DESC`;
 
-    db.query(query, [idnegocio,`%${filtro}%`, `%${filtro}%`, `%${filtro}%`, `%${filtro}%`, `%${filtro}%`], (err, resultados) => {
+    db.query(query, [idnegocio, `%${filtro}%`, `%${filtro}%`, `%${filtro}%`, `%${filtro}%`, `%${filtro}%`], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
             return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
@@ -106,6 +106,27 @@ exports.obtenerClientes = (req, res) => {
     const query = 'SELECT * FROM negocios';
 
     db.query(query, [], (err, resultados) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+        }
+
+        // Verificar si se encontraron productos
+        if (resultados.length > 0) {
+            return res.json({ state: 'success', data: resultados, message: 'Registros obtenidos correctamente' });
+        } else {
+            return res.status(200).json({ state: 'fail', data: [], message: 'No se encontraron Registros' });
+        }
+    });
+};
+
+exports.obtenerSociosPorNegocio = (req, res) => {
+
+
+    // Consulta para obtener productos por negocio
+    const query = 'SELECT * FROM socios where idnegocio=?';
+
+    db.query(query, [req.params.idnegocio], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
             return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
@@ -486,6 +507,42 @@ exports.clientesMtto = (req, res) => {
             WHERE id = ?`;
 
         db.query(query, [nombre, giro, cliente, direccion, municipio, departamento, nit, registro, telefono, whatsapp, id], (err) => {
+            if (err) {
+                console.error('Error en la consulta:', err);
+                return res.status(200).json({ state: 'fail', data: null, message: 'Error al actualizar el registro' });
+            }
+
+            return res.json({ state: 'success', data: null, message: 'Registro actualizado correctamente' });
+        });
+    }
+};
+
+exports.socioPorNegocioMtto = (req, res) => {
+    const id = req.body.id;
+    const { nombre, giro, cliente, direccion, municipio, departamento, documento, registro, telefono, whatsapp, idnegocio } = req.body;
+
+    if (id == 0) {
+        const query = `
+            INSERT INTO socios 
+                (nombre, giro, cliente, direccion, municipio, departamento, documento, registro, telefono, whatsapp, idnegocio) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        db.query(query, [nombre, giro, cliente, direccion, municipio, departamento, documento, registro, telefono, whatsapp, idnegocio], (err, resultado) => {
+            if (err) {
+                console.error('Error en la consulta:', err);
+                return res.status(200).json({ state: 'fail', data: null, message: 'Error al crear el Registro' });
+            }
+
+            return res.json({ state: 'success', data: { id: resultado.insertId }, message: 'Registro creado correctamente' });
+        });
+    } else {
+        const query = `
+            UPDATE socios 
+            SET nombre = ?, giro = ?, cliente = ?, direccion = ?, municipio = ?, 
+                departamento = ?, documento = ?, registro = ?, telefono = ?, whatsapp = ? , idnegocio=?
+            WHERE id = ?`;
+
+        db.query(query, [nombre, giro, cliente, direccion, municipio, departamento, documento, registro, telefono, whatsapp, idnegocio, id], (err) => {
             if (err) {
                 console.error('Error en la consulta:', err);
                 return res.status(200).json({ state: 'fail', data: null, message: 'Error al actualizar el registro' });

@@ -37,8 +37,10 @@ router.delete('/inventarioPorProductos/:id', productosController.eliminarInventa
 
 // Ruta de mantenimiento de clientes
 router.get('/clientes/', productosController.obtenerClientes);
+router.get('/sociospornegocio/:idnegocio', productosController.obtenerSociosPorNegocio);
 router.get('/clientes/:filtro', productosController.obtenerClientesPorFiltro);
 router.post('/clientes', productosController.clientesMtto);
+router.post('/sociospornegocio', productosController.socioPorNegocioMtto);
 router.delete('/clientes/:id', productosController.eliminarCliente);
 
 // Ruta de mantenimiento de facturas
