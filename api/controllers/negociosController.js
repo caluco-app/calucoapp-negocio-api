@@ -99,6 +99,67 @@ exports.inventarioPorProductos = (req, res) => {
     });
 };
 
+exports.inventarioPorProductoSeleccionado = (req, res) => {
+    const idProducto = req.params.idProducto;
+
+    // Consulta para obtener productos por negocio
+    const query = `
+    select 
+i.id, 
+i.cantidad, 
+i.idinventario,
+i.idproducto, 
+i2.codigo, 
+i2.nombre, 
+i2.descripcion
+from 
+inventarioporproducto i join inventarios i2 on i2.id=i.idinventario
+where idproducto = ?
+    `;
+
+    db.query(query, [idProducto], (err, resultados) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+        }
+
+        // Verificar si se encontraron productos
+        if (resultados.length > 0) {
+            return res.json({ state: 'success', data: resultados, message: 'Registros obtenidos correctamente' });
+        } else {
+            return res.status(200).json({ state: 'fail', data: [], message: 'No se encontraron Registros' });
+        }
+    });
+};
+
+exports.inventarioPorProductoNoSeleccionado = (req, res) => {
+    const idNegocio = req.params.idNegocio;
+
+    // Consulta para obtener productos por negocio
+    const query = `
+    SELECT i.id, i.codigo , i.nombre , i.descripcion, i.idnegocio, i2.cantidad 
+FROM inventarios i
+LEFT JOIN inventarioporproducto i2 ON i2.idinventario = i.id
+WHERE 
+i2.idinventario IS NULL 
+AND i.idnegocio = ?
+    `;
+
+    db.query(query, [idNegocio], (err, resultados) => {
+        if (err) {
+            console.error('Error en la consulta:', err);
+            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+        }
+
+        // Verificar si se encontraron productos
+        if (resultados.length > 0) {
+            return res.json({ state: 'success', data: resultados, message: 'Registros obtenidos correctamente' });
+        } else {
+            return res.status(200).json({ state: 'fail', data: [], message: 'No se encontraron Registros' });
+        }
+    });
+};
+
 exports.obtenerClientes = (req, res) => {
 
 
@@ -385,13 +446,13 @@ exports.inventarioMtto = (req, res) => {
 // mantenimiento de productos
 exports.productoMtto = (req, res) => {
     const id = req.body.id;
-    const { codigo, nombre, descripcion, idnegocio } = req.body;
+    const { codigo, nombre, descripcion, idnegocio, precio } = req.body;
 
     if (!id) {
 
-        const query = 'INSERT INTO productos (codigo, nombre, descripcion, idnegocio) VALUES (?, ?, ?, ?)';
+        const query = 'INSERT INTO productos (codigo, nombre, descripcion, idnegocio, precio) VALUES (?, ?, ?, ?, ?)';
 
-        db.query(query, [codigo, nombre, descripcion, idnegocio], (err, resultado) => {
+        db.query(query, [codigo, nombre, descripcion, idnegocio, precio], (err, resultado) => {
             if (err) {
                 console.error('Error en la consulta:', err);
                 return res.status(200).json({ state: 'fail', data: null, message: 'Error al crear el Registro' });
@@ -401,9 +462,9 @@ exports.productoMtto = (req, res) => {
         });
     }
     else {
-        const query = 'UPDATE productos SET codigo = ?, nombre = ?, descripcion = ?, idnegocio = ? WHERE id = ?';
+        const query = 'UPDATE productos SET codigo = ?, nombre = ?, descripcion = ?, idnegocio = ?, precio = ? WHERE id = ?';
 
-        db.query(query, [codigo, nombre, descripcion, idnegocio, id], (err) => {
+        db.query(query, [codigo, nombre, descripcion, idnegocio, precio, id], (err) => {
             if (err) {
                 console.error('Error en la consulta:', err);
                 return res.status(200).json({ state: 'fail', data: null, message: 'Error al actualizar el registro' });
@@ -449,6 +510,7 @@ exports.ofertaMtto = (req, res) => {
 
 
 exports.inventarioPorProductoMtto = (req, res) => {
+
     const id = req.body.id;
     const { cantidad, idinventario, idproducto } = req.body;
 

@@ -13,6 +13,7 @@ router.get('/inventarioPorNegocio/:idNegocio', productosController.inventarioPor
 router.post('/inventariosPorNegocio', productosController.inventarioMtto);
 router.delete('/inventarios/:id', productosController.eliminarInventario);
 
+
 // Ruta de mantenimiento de stocks
 router.post('/stocksPorNegocio', productosController.stockMtto);
 router.get('/stockPorInventario/:idNegocio/:idInventario', productosController.stockPorInventario);
@@ -31,6 +32,8 @@ router.delete('/ofertasPorProductos/:id', productosController.eliminarOfertaPorP
 
 // Ruta de mantenimiento de inventarios
 router.get('/inventarioPorProductos/:idProducto', productosController.inventarioPorProductos);
+router.get('/inventarioPorProductoSeleccionado/:idProducto', productosController.inventarioPorProductoSeleccionado);
+router.get('/inventarioPorProductoNoSeleccionado/:idNegocio', productosController.inventarioPorProductoNoSeleccionado);
 router.post('/inventarioPorProductos', productosController.inventarioPorProductoMtto);
 router.delete('/inventarioPorProductos/:id', productosController.eliminarInventarioPorProducto);
 
