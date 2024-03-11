@@ -13,7 +13,14 @@ exports.login = (req, res) => {
             return res.status(200).json({ state: 'fail', data: null, message: 'Error en la autenticación' });
         }
         if (results.length > 0) {
-            return res.json({ state: 'success', data: { ...results[0] }, message: 'Acceso permitido' });
+            const querySucursales = 'select * from sucursales  WHERE idnegocio = ?';
+            db.query(querySucursales, [results[0].idnegocio], (err, resultsSucursales) => {
+                if (err) {
+                    console.error('Error en la consulta de sucursales:', err);
+                    return res.status(200).json({ state: 'fail', data: null, message: 'Error en la autenticación' });
+                }
+                return res.json({ state: 'success', data: { ...results[0], sucursales: resultsSucursales}, message: 'Acceso permitido' });
+            });
         } else {
             // Usuario o contraseña incorrectos
             return res.status(200).json({ state: 'fail', data: null, message: 'Usuario o contraseña incorrectos' });

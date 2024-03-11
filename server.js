@@ -2,9 +2,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors'); // Importa el módulo cors
+
 const authRoutes = require('./api/routes/authRoutes'); 
 const autenticacionRoutes = require('./api/routes/autenticacionRoutes'); 
 const negocioRouter = require('./api/routes/negocioRouter'); 
+const sucursalRouter = require('./api/routes/sucursalesRoutes'); 
 
 const app = express();
 const PORT = 4201;
@@ -20,6 +22,7 @@ app.use(cors());
 app.use('/api', authRoutes);
 app.use('/api', autenticacionRoutes);
 app.use('/api', negocioRouter);
+app.use('/api/sucursal', sucursalRouter);
 
 // Iniciar el servidor
 app.listen(PORT, () => {
