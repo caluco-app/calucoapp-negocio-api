@@ -19,7 +19,7 @@ exports.obtenerPermisos = (req, res) => {
     db.query(query, [id], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(500).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(500).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
         // Verificacion de sentencia SQL
         if (resultados.length > 0) {
@@ -72,7 +72,7 @@ exports.obtnerfacturasPorSucursal = (req, res) => {
     db.query(query, [idsubopcion, idsucursal], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
         // Verificar si se encontraron productos
         if (resultados.length > 0) {

@@ -48,17 +48,23 @@ exports.obtnerTicketsPorID = (req, res) => {
     // Consulta para obtener productos por negocio
     const query = `
     SELECT 
-         t.*,
-         s.nombre as sucursal,
-         n.nombre as negocio,
-        COUNT(ti.id) AS cantidaditems,
-        SUM(cantidad * preciounitario) AS total
-    FROM 
-        ticketitems ti join tickets t on t.id=ti.idticket 
-        join sucursales s on s.id = t.idsucursal and t.id = ? 
-        join negocios n on n.id = s.idnegocio
-    GROUP BY 
-        idticket
+    t.*,
+    s.nombre AS sucursal,
+    n.nombre AS negocio,
+    IFNULL(COUNT(ti.id), 0) AS cantidaditems,
+    IFNULL(SUM(ti.cantidad * ti.preciounitario), 0) AS total
+FROM 
+    tickets t
+LEFT JOIN 
+    ticketitems ti ON t.id = ti.idticket 
+JOIN 
+    sucursales s ON s.id = t.idsucursal 
+JOIN 
+    negocios n ON n.id = s.idnegocio
+WHERE 
+    t.id = ?
+GROUP BY 
+    t.id
    
     `;
 
@@ -126,7 +132,7 @@ exports.insertarTicketItem = (req, res) => {
 
 exports.obtnerDetalleTickets = (req, res) => {
     const id = req.body.id; // Suponiendo que el ID del negocio se pasa como parámetro en la URL
-  
+
     // Consulta para obtener productos por negocio
     const query = `
     select 

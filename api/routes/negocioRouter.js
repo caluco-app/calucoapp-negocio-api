@@ -33,7 +33,7 @@ router.delete('/ofertasPorProductos/:id', productosController.eliminarOfertaPorP
 // Ruta de mantenimiento de inventarios
 router.get('/inventarioPorProductos/:idProducto', productosController.inventarioPorProductos);
 router.get('/inventarioPorProductoSeleccionado/:idProducto', productosController.inventarioPorProductoSeleccionado);
-router.get('/inventarioPorProductoNoSeleccionado/:idNegocio', productosController.inventarioPorProductoNoSeleccionado);
+router.get('/inventarioPorProductoNoSeleccionado/:idProducto', productosController.inventarioPorProductoNoSeleccionado);
 router.post('/inventarioPorProductos', productosController.inventarioPorProductoMtto);
 router.delete('/inventarioPorProductos/:id', productosController.eliminarInventarioPorProducto);
 

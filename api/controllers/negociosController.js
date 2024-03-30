@@ -11,7 +11,7 @@ exports.productosPorNegocios = (req, res) => {
     db.query(query, [idNegocio], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -33,7 +33,7 @@ exports.ofertasPorProductos = (req, res) => {
     db.query(query, [idProducto], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -66,7 +66,7 @@ exports.obtenerOfertasPorFiltro = (req, res) => {
     db.query(query, [idnegocio, `%${filtro}%`, `%${filtro}%`, `%${filtro}%`, `%${filtro}%`, `%${filtro}%`], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron ofertas
@@ -87,7 +87,7 @@ exports.inventarioPorProductos = (req, res) => {
     db.query(query, [idProducto], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -120,7 +120,7 @@ where idproducto = ?
     db.query(query, [idProducto], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -133,22 +133,21 @@ where idproducto = ?
 };
 
 exports.inventarioPorProductoNoSeleccionado = (req, res) => {
-    const idNegocio = req.params.idNegocio;
+    const idProducto = req.params.idProducto;
 
     // Consulta para obtener productos por negocio
     const query = `
-    SELECT i.id, i.codigo , i.nombre , i.descripcion, i.idnegocio, i2.cantidad 
-FROM inventarios i
-LEFT JOIN inventarioporproducto i2 ON i2.idinventario = i.id
-WHERE 
-i2.idinventario IS NULL 
-AND i.idnegocio = ?
+    SELECT i.id, i.codigo, i.nombre, i.descripcion, i.idnegocio, i2.cantidad, i2.idproducto 
+    FROM inventarios i
+    LEFT JOIN inventarioporproducto i2 ON i2.idinventario = i.id AND i2.idproducto = ? 
+    LEFT JOIN productos p ON p.id = i2.idproducto 
+    WHERE i.idnegocio = (SELECT idnegocio FROM productos WHERE id = ?)
     `;
 
-    db.query(query, [idNegocio], (err, resultados) => {
+    db.query(query, [idProducto, idProducto], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -169,7 +168,7 @@ exports.obtenerClientes = (req, res) => {
     db.query(query, [], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -190,7 +189,7 @@ exports.obtenerSociosPorNegocio = (req, res) => {
     db.query(query, [req.params.idnegocio], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -211,7 +210,7 @@ exports.obtenerClientesPorFiltro = (req, res) => {
     db.query(query, [`%${filtro}%`, `%${filtro}%`, `%${filtro}%`, `%${filtro}%`], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -232,7 +231,7 @@ exports.obtenerTiposDeFactura = (req, res) => {
     db.query(query, [], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -253,7 +252,7 @@ exports.obtenerPeriodoTributarios = (req, res) => {
     db.query(query, [], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -299,7 +298,7 @@ exports.stockPorInventario = (req, res) => {
     db.query(query, [idNegocio, idInventario], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -327,7 +326,7 @@ exports.stockPorIdInventario = (req, res) => {
     db.query(query, [idInventario], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -370,7 +369,7 @@ exports.inventarioPorNegocios = (req, res) => {
     db.query(query, [idNegocio], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
@@ -398,7 +397,7 @@ exports.productosPorNegocios = (req, res) => {
     db.query(query, [idNegocio], (err, resultados) => {
         if (err) {
             console.error('Error en la consulta:', err);
-            return res.status(200).json({ state: 'fail', data: [], message: 'Error en la consulta a la base de datos' });
+            return res.status(200).json({ state: 'fail', data: [], message: 'Lo sentimos, ocurrio un error. Error D500T, no pudo procesar la acción' });
         }
 
         // Verificar si se encontraron productos
