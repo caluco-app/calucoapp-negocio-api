@@ -2,10 +2,10 @@
 const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'password',
-  database: 'calucoapp',
+  host: 'calucoappmysql.mysql.database.azure.com',
+  user: 'administrador',
+  password: 'VTF7xby7Y7Rrv85',
+  database: 'calucoappdb',
   port: 3306,
 });
 
