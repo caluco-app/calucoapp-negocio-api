@@ -11,7 +11,7 @@ const ticketRouter = require('./api/routes/ticketsRoutes');
 
 const app = express();
 const PORT = 4201;
-const IP = '20.55.36.102';
+const IP = '10.0.0.4';
 
 // Middleware
 app.use(bodyParser.json());
