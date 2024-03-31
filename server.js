@@ -11,7 +11,6 @@ const ticketRouter = require('./api/routes/ticketsRoutes');
 
 const app = express();
 const PORT = 4201;
-const IP = '10.0.0.4';
 
 // Middleware
 app.use(bodyParser.json());
@@ -28,6 +27,6 @@ app.use('/api/sucursal', sucursalRouter);
 app.use('/api/tickets', ticketRouter);
 
 // Iniciar el servidor
-app.listen(PORT, IP, () => {
-  console.log(`Servidor corriendo en http://${IP}:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
